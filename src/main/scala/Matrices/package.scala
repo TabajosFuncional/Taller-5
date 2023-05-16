@@ -31,12 +31,10 @@ package object Matrices {
   //Ejercicio 1.1.2
   def multMatrizPar(m1: Matriz, m2: Matriz): Matriz = {
     val n = m1.length
-    val m2Transpuesta = transpuesta(m2)
-    //val (t1,t2) = parallel(m1.length,transpuesta(m2))
+    val t1 = task(transpuesta(m2))
     Vector.tabulate(n, n) { (i, j) =>
-      val (filaM1, columnaM2Transpuesta) = parallel(m1(i),m2Transpuesta(j))
-      //val filaM1 = m1(i)
-      //val columnaM2Transpuesta = t2(j)
+      val filaM1 = m1(i)
+      val columnaM2Transpuesta = t1.join()(j)
       prodPunto(filaM1, columnaM2Transpuesta)
     }
   }
