@@ -30,12 +30,20 @@ package object Matrices {
 
   //Ejercicio 1.1.2
   def multMatrizPar(m1: Matriz, m2: Matriz): Matriz = {
+    val m2T = transpuesta(m2)
     val n = m1.length
-    val t1 = task(transpuesta(m2))
-    Vector.tabulate(n, n) { (i, j) =>
-      val filaM1 = m1(i)
-      val columnaM2Transpuesta = t1.join()(j)
-      prodPunto(filaM1, columnaM2Transpuesta)
+    val mitad = n / 2
+    val umbral = 16
+    if (n <= umbral) multMatriz(m1,m2)
+    else {
+      val t1 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodPunto(m1(i), m2T(j))})
+      val t2 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodPunto(m1(i), m2T(j+mitad))})
+      val t3 = task(Vector.tabulate(mitad, mitad) { (i,j) => prodPunto(m1(i+mitad), m2T(j))})
+      val t4 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodPunto(m1(i+mitad), m2T(j+mitad))})
+
+      val matrizSuperior = (t1.join() zip t2.join()).map({ case (filaC11, filaC12) => filaC11 ++ filaC12 })
+      val matrizInferior = (t3.join() zip t4.join()).map({ case (filaC21, filaC22) => filaC21 ++ filaC22 })
+      matrizSuperior ++ matrizInferior
     }
   }
 
@@ -85,19 +93,23 @@ package object Matrices {
   //Ejercicio 1.2.4
   def multMatrizRecPar(m1: Matriz, m2: Matriz): Matriz = {
     val n = m1.length
+    val umbral = 16
     val m = n / 2
     if (m == 0) {
       Vector(Vector(m1(0)(0) * m2(0)(0)))
     } else {
-      val (a11, a12, a21, a22) = parallel(subMatriz(m1, 0, 0, m),subMatriz(m1, 0, m, m),subMatriz(m1, m, 0, m),subMatriz(m1, m, m, m))
-      val (b11, b12, b21, b22) = parallel(subMatriz(m2, 0, 0, m),subMatriz(m2, 0, m, m),subMatriz(m2, m, 0, m),subMatriz(m2, m, m, m))
-      val (c11, c12, c21, c22) = parallel(sumMatriz(multMatrizRec(a11, b11), multMatrizRec(a12, b21)),
-                                          sumMatriz(multMatrizRec(a11, b12), multMatrizRec(a12, b22)),
-                                          sumMatriz(multMatrizRec(a21, b11), multMatrizRec(a22, b21)),
-                                          sumMatriz(multMatrizRec(a21, b12), multMatrizRec(a22, b22)))
-      val matrizSuperior = (c11 zip c12).map({ case (filaC11, filaC12) => filaC11 ++ filaC12 })
-      val matrizInferior = (c21 zip c22).map({ case (filaC21, filaC22) => filaC21 ++ filaC22 })
-      matrizSuperior ++ matrizInferior
+      if (n <= umbral) multMatrizRec(m1,m2)
+      else {
+        val (a11, a12, a21, a22) = parallel(subMatriz(m1, 0, 0, m),subMatriz(m1, 0, m, m),subMatriz(m1, m, 0, m),subMatriz(m1, m, m, m))
+        val (b11, b12, b21, b22) = parallel(subMatriz(m2, 0, 0, m),subMatriz(m2, 0, m, m),subMatriz(m2, m, 0, m),subMatriz(m2, m, m, m))
+        val (c11, c12, c21, c22) = parallel(sumMatriz(multMatrizRecPar(a11, b11), multMatrizRecPar(a12, b21)),
+                                            sumMatriz(multMatrizRecPar(a11, b12), multMatrizRecPar(a12, b22)),
+                                            sumMatriz(multMatrizRecPar(a21, b11), multMatrizRecPar(a22, b21)),
+                                            sumMatriz(multMatrizRecPar(a21, b12), multMatrizRecPar(a22, b22)))
+        val matrizSuperior = (c11 zip c12).map({ case (filaC11, filaC12) => filaC11 ++ filaC12 })
+        val matrizInferior = (c21 zip c22).map({ case (filaC21, filaC22) => filaC21 ++ filaC22 })
+        matrizSuperior ++ matrizInferior
+      }
     }
   }
 
