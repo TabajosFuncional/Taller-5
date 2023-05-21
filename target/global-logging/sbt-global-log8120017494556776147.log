@@ -1,0 +1,11 @@
+[debug] > Exec(cs setup, None, None)
+[error] Expected ID character
+[error] Not a valid command: cs
+[error] Expected project ID
+[error] Expected configuration
+[error] Expected ':'
+[error] Expected key
+[error] Not a valid key: cs
+[error] cs setup
+[error]   ^
+[debug] > Exec(idea-shell, None, None)

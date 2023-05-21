@@ -12,7 +12,7 @@ package object Matrices {
     val l = m.length
     Vector.tabulate(l,l)((i,j) => m(j)(i))
   }
-  def prodPunto(v1: Vector[Int], v2: Vector[Int]): Int = {
+  def prodEscalar(v1: Vector[Int], v2: Vector[Int]): Int = {
     (v1 zip v2).map({case (i,j) => i*j}).sum
   }
 
@@ -23,8 +23,8 @@ package object Matrices {
 
     Vector.tabulate(n, n) { (i, j) =>
       val filaM1 = m1(i)
-      val columnaM2Transpuesta = m2Transpuesta(j)
-      prodPunto(filaM1, columnaM2Transpuesta)
+      val filaM2Transpuesta = m2Transpuesta(j)
+      prodEscalar(filaM1, filaM2Transpuesta)
     }
   }
 
@@ -36,10 +36,10 @@ package object Matrices {
     val umbral = 16
     if (n <= umbral) multMatriz(m1,m2)
     else {
-      val t1 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodPunto(m1(i), m2T(j))})
-      val t2 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodPunto(m1(i), m2T(j+mitad))})
-      val t3 = task(Vector.tabulate(mitad, mitad) { (i,j) => prodPunto(m1(i+mitad), m2T(j))})
-      val t4 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodPunto(m1(i+mitad), m2T(j+mitad))})
+      val t1 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodEscalar(m1(i), m2T(j))})
+      val t2 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodEscalar(m1(i), m2T(j+mitad))})
+      val t3 = task(Vector.tabulate(mitad, mitad) { (i,j) => prodEscalar(m1(i+mitad), m2T(j))})
+      val t4 = task(Vector.tabulate(mitad, mitad) { (i, j) => prodEscalar(m1(i+mitad), m2T(j+mitad))})
 
       val matrizSuperior = (t1.join() zip t2.join()).map({ case (filaC11, filaC12) => filaC11 ++ filaC12 })
       val matrizInferior = (t3.join() zip t4.join()).map({ case (filaC21, filaC22) => filaC21 ++ filaC22 })
