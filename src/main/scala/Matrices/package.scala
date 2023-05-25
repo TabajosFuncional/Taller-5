@@ -1,3 +1,9 @@
+/*
+ * Taller 5: Paralelización de tareas
+ * Integrantes: John Freddy Belalcázar - 2182464
+ *              Santiago González Gálvez - 2183392
+ */
+
 import common . _
 import scala.util.Random
 package object Matrices {
