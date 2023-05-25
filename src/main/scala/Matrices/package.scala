@@ -201,7 +201,7 @@ package object Matrices {
 
         val p1 = task(multStrassenPar(a11, s1.join()))
         val p2 = task(multStrassenPar(s2.join(), b22))
-        val p3 = multStrassenPar(s3.join(), b11)
+        val p3 = task(multStrassenPar(s3.join(), b11))
         val p4 = multStrassenPar(a22, s4.join())
         val p5 = multStrassenPar(s5.join(), s6.join())
         val p6 = multStrassenPar(s7.join(), s8.join())
@@ -209,8 +209,8 @@ package object Matrices {
 
         val (c11, c12, c21, c22) = parallel(sumMatriz(restaMatriz(sumMatriz(p5, p4), p2.join()), p6),
           sumMatriz(p1.join(), p2.join()),
-          sumMatriz(p3, p4),
-          restaMatriz(restaMatriz(sumMatriz(p5, p1.join()), p3), p7))
+          sumMatriz(p3.join(), p4),
+          restaMatriz(restaMatriz(sumMatriz(p5, p1.join()), p3.join()), p7))
 
         val matrizSuperior = task((c11 zip c12).map({ case (filaC11, filaC12) => filaC11 ++ filaC12 }))
         val matrizInferior = (c21 zip c22).map({ case (filaC21, filaC22) => filaC21 ++ filaC22 })
